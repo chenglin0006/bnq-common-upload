@@ -28,7 +28,7 @@ class App extends Component {
             showPicListDealDiv:true,
             refreshList:this.refreshList,
             fileSizeLimit:3,
-            uploadImgLimitNumber:10 //可上传图片张数
+            // uploadImgLimitNumber:10 //可上传图片张数
         }
     return (
       <div className="App">

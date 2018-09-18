@@ -179,10 +179,10 @@ export default class PicturesWall extends React.Component {
         }
         let timeStamp=new Date().getTime();
         let list = this.props.fileList || [];
-        if(this.props.uploadImgLimitNumber>1 || !this.props.uploadImgLimitNumber&&this.props.uploadImgLimitNumber!=0){
+        if(this.props.uploadImgLimitNumber&&this.props.uploadImgLimitNumber>1 || !this.props.uploadImgLimitNumber&&this.props.uploadImgLimitNumber!=0){
             list.push({
-                flag:timeStamp,
-                uid: timeStamp,
+                flag:uuid(),
+                uid: uuid(),
                 name: res.key,
                 width:res.w,
                 height:res.h,
@@ -212,7 +212,7 @@ export default class PicturesWall extends React.Component {
         })
         concatList.sort(function(a,b){return a.uploadOrder-b.uploadOrder});
         list = rawList.concat(concatList);
-
+        this.setState({stateFileList: list})
         this.props.refreshList(list,this.props.id);
     }
 
@@ -225,6 +225,7 @@ export default class PicturesWall extends React.Component {
     }
 
     render() {
+        console.log(this.state.stateFileList,'=====');
         const {previewVisible, previewImage} = this.state;
         const {uploadImgLimitNumber,isUploadDefine,fileList,imgDesc} = this.props
         const uploadButton = (
@@ -280,9 +281,9 @@ PicturesWall.propTypes = {
     className: PropTypes.string,   //可以定制样式
     fileList:PropTypes.array,      //用来存放上传的图片列表
     QiniuTokenUrl:PropTypes.string,   //七牛上传获取token url,有默认链接
-    imgDesc:PropTypes.string,       //上传图片的格式说明
+    imgDesc:PropTypes.string,       //上传图片的说明
     isUploadDefine:PropTypes.bool,  //是否是自定义的照片墙
-    showPicListDealDiv:PropTypes.bool,  //是否需要前移后移功能(默认需要)
+    showPicListDealDiv:PropTypes.bool,  //自定义的照片墙是否需要前移后移功能(默认需要)
     refreshList:PropTypes.func,   //图片列表刷新
     uploadImgLimitNumber:PropTypes.number, //可上传图片张数
     fileSizeLimit:PropTypes.number //图片大小控制，单位M
