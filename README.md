@@ -20,3 +20,9 @@ PicturesWall.propTypes = {
     uploadImgLimitNumber:PropTypes.number, //可上传图片张数
     fileSizeLimit:PropTypes.number //图片大小控制，单位M
 }
+
+//初始化图片列表应有的格式
+fileList:[{
+    uid:1, //图片唯一标识
+    url:''
+}]

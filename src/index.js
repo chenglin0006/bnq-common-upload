@@ -58,13 +58,14 @@ export default class PicturesWall extends React.Component {
         });
     }
 
-    _removeImgFun(flag){
+    _removeImgFun(uid){
         let list  = this.state.stateFileList;
         list.forEach((item,index)=>{
-            if(item.flag === flag){
+            if(item.uid === uid){
                 list.splice(index,1);
             }
         })
+        this.setState({stateFileList:list});
         this.props.refreshList(list,this.props.id);
     }
 
@@ -81,6 +82,7 @@ export default class PicturesWall extends React.Component {
             }
             list = swapItems(list, index, index + 1);
         }
+        this.setState({stateFileList:list});
         this.props.refreshList(list,this.props.id);
     }
 
@@ -95,7 +97,7 @@ export default class PicturesWall extends React.Component {
                             {showPicListDealDiv?<Button size='small' onClick={()=>{this._sortImgFun(i,'pre')}}>前移</Button>:""}
                             {showPicListDealDiv?<Button size='small' onClick={()=>{this._sortImgFun(i,'next')}}>后移</Button>:""}
                             <Button size='small' onClick={()=>{
-                                this._removeImgFun(ele.flag,this.props.id)
+                                this._removeImgFun(ele.uid,this.props.id)
                             }}>删除</Button>
                         </div>
                     </div>
@@ -172,16 +174,15 @@ export default class PicturesWall extends React.Component {
     }
 
     _qiniuCallBack(res){
-        if(this.props.fileList.length==this.props.uploadImgLimitNumber){
+        if(this.state.stateFileList.length==this.props.uploadImgLimitNumber){
             let msg = `最多允许传${this.props.uploadImgLimitNumber}张图`;
             message.error(msg);
             return
         }
         let timeStamp=new Date().getTime();
-        let list = this.props.fileList || [];
+        let list = this.state.stateFileList || [];
         if(this.props.uploadImgLimitNumber&&this.props.uploadImgLimitNumber>1 || !this.props.uploadImgLimitNumber&&this.props.uploadImgLimitNumber!=0){
             list.push({
-                flag:uuid(),
                 uid: uuid(),
                 name: res.key,
                 width:res.w,
@@ -225,7 +226,6 @@ export default class PicturesWall extends React.Component {
     }
 
     render() {
-        console.log(this.state.stateFileList,'=====');
         const {previewVisible, previewImage} = this.state;
         const {uploadImgLimitNumber,isUploadDefine,fileList,imgDesc} = this.props
         const uploadButton = (
@@ -249,8 +249,8 @@ export default class PicturesWall extends React.Component {
                     multiple={!uploadImgLimitNumber||uploadImgLimitNumber&&uploadImgLimitNumber>1?true:false}
                     listType={isUploadDefine?'':"picture-card"}
                     onPreview={this._handlePreview}
-                    onRemove={(e)=>this._removeImgFun(e.flag,this.props.id)}
-                    fileList={fileList}
+                    onRemove={(e)=>this._removeImgFun(e.uid,this.props.id)}
+                    fileList={this.state.stateFileList}
                     customRequest={(e) => {
                         this._getQiniuToken(
                             e,
@@ -259,14 +259,14 @@ export default class PicturesWall extends React.Component {
                         )
                     }}
                 >
-                    {fileList&&fileList.length >= uploadImgLimitNumber? null : uploadButton}
+                    {this.state.stateFileList&&this.state.stateFileList.length >= uploadImgLimitNumber? null : uploadButton}
                 </Upload>
                 {!isUploadDefine && imgDesc?
                     <div style={{width:'700px',position: 'absolute',
                         bottom: '-25px'}}>
                         {imgDesc}
                     </div>:''}
-                {isUploadDefine?<div className='img-list-div'>{this.renderPicList(fileList)}</div>:''}
+                {isUploadDefine?<div className='img-list-div'>{this.renderPicList(this.state.stateFileList)}</div>:''}
                 <Modal visible={previewVisible} footer={null} onCancel={this._handleCancel}>
                     <img alt="example" style={{width: '90%'}} src={previewImage}/>
                 </Modal>
