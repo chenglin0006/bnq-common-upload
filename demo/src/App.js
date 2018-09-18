@@ -28,7 +28,7 @@ class App extends Component {
             showPicListDealDiv:true,
             refreshList:this.refreshList,
             fileSizeLimit:3,
-            // uploadImgLimitNumber:10 //可上传图片张数
+            uploadImgLimitNumber:10 //可上传图片张数
         }
     return (
       <div className="App">
@@ -36,9 +36,6 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
           <CommonComponent {...props}></CommonComponent>
       </div>
     );
