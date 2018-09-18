@@ -1,13 +1,215 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`filter 1`] = `
-<button
-  className="ant-btn test"
-  onClick={[Function]}
-  type="button"
+<div
+  className="clearfix define-upload-wall pic-list-div test"
 >
   <span>
-    test
+    描述图片
+    <span
+      style={
+        Object {
+          "color": "red",
+        }
+      }
+    >
+      （
+      图片说明
+      ）
+    </span>
   </span>
-</button>
+  <span
+    className=""
+  >
+    <div
+      className="ant-upload ant-upload-select ant-upload-select-"
+      style={
+        Object {
+          "display": "",
+        }
+      }
+    >
+      <span
+        className="ant-upload"
+        onClick={[Function]}
+        onDragOver={[Function]}
+        onDrop={[Function]}
+        onKeyDown={[Function]}
+        role="button"
+        tabIndex="0"
+      >
+        <input
+          accept=""
+          multiple={true}
+          onChange={[Function]}
+          style={
+            Object {
+              "display": "none",
+            }
+          }
+          type="file"
+        />
+        <button
+          className="ant-btn"
+          onClick={[Function]}
+          type="button"
+        >
+          <i
+            className="anticon anticon-upload"
+          />
+          <span>
+             点击上传
+          </span>
+        </button>
+      </span>
+    </div>
+    <div
+      className="ant-upload-list ant-upload-list-"
+    >
+      <div
+        className="ant-upload-list-item ant-upload-list-item-undefined"
+      >
+        <div
+          className="ant-upload-list-item-info"
+        >
+          <span>
+            <i
+              className="anticon anticon-paper-clip"
+            />
+            <a
+              className="ant-upload-list-item-name"
+              href="http://res1.bnq.com.cn/003f1937-60b9-440b-b29b-4e152e235a25?t=1537261779453"
+              onClick={[Function]}
+              rel="noopener noreferrer"
+              target="_blank"
+            />
+          </span>
+        </div>
+        <i
+          className="anticon anticon-cross"
+          onClick={[Function]}
+          title="Remove file"
+        />
+      </div>
+      <div
+        className="ant-upload-list-item ant-upload-list-item-undefined"
+      >
+        <div
+          className="ant-upload-list-item-info"
+        >
+          <span>
+            <i
+              className="anticon anticon-paper-clip"
+            />
+            <a
+              className="ant-upload-list-item-name"
+              href="http://res1.bnq.com.cn/d1d85701-e7ff-471f-89d2-4a23960845ec?t=1537264755200"
+              onClick={[Function]}
+              rel="noopener noreferrer"
+              target="_blank"
+            />
+          </span>
+        </div>
+        <i
+          className="anticon anticon-cross"
+          onClick={[Function]}
+          title="Remove file"
+        />
+      </div>
+    </div>
+  </span>
+  
+  <div
+    className="img-list-div"
+  >
+    <div
+      className="img-item"
+    >
+      <img
+        onClick={[Function]}
+        src="http://res1.bnq.com.cn/003f1937-60b9-440b-b29b-4e152e235a25?t=1537261779453"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+      />
+      <div
+        className="buttons-div"
+      >
+        <button
+          className="ant-btn ant-btn-sm"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            前 移
+          </span>
+        </button>
+        <button
+          className="ant-btn ant-btn-sm"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            后 移
+          </span>
+        </button>
+        <button
+          className="ant-btn ant-btn-sm"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            删 除
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      className="img-item"
+    >
+      <img
+        onClick={[Function]}
+        src="http://res1.bnq.com.cn/d1d85701-e7ff-471f-89d2-4a23960845ec?t=1537264755200"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+      />
+      <div
+        className="buttons-div"
+      >
+        <button
+          className="ant-btn ant-btn-sm"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            前 移
+          </span>
+        </button>
+        <button
+          className="ant-btn ant-btn-sm"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            后 移
+          </span>
+        </button>
+        <button
+          className="ant-btn ant-btn-sm"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            删 除
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 `;
