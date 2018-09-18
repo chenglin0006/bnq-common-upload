@@ -1,1 +1,67 @@
 @import "~antd/dist/antd.less";
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+}
+
+.define-upload-wall .ant-upload-list{
+  display: none !important;
+}
+.img-item{
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+  position: relative;
+  background-color: #DDDDDC;
+  margin-bottom: 50px;
+  img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    object-fit: contain;
+  }
+  .buttons-div{
+    position: absolute;
+    bottom: -42px;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    text-align: center;
+    button{
+      margin-right: 10px;
+      &:last-child{
+        margin-right: 0;
+      }
+    }
+  }
+}
+.pic-list-div{
+  width: 800px !important;
+  position: relative;
+}
+.define-upload-wall{
+  width: 800px;
+  margin: 20px;
+  padding: 10px;
+  padding-left: 40px;
+  border: solid 1px #e1e1e1;
+  border-radius: 5px;
+  margin-left: 0px;
+}
+
+.ant-modal-body{
+  text-align: center;
+}
+.pic-list-div{
+  text-align: left;
+}
