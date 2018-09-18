@@ -24,11 +24,11 @@ class App extends Component {
             className: 'test',   //可以定制样式
             fileList:this.state.fileList,      //用来存放上传的图片列表
             imgDesc:'图片说明',       //上传图片的格式说明
-            isUploadDefine:false,  //是否是自定义的照片墙
+            isUploadDefine:true,  //是否是自定义的照片墙
             showPicListDealDiv:true,
             refreshList:this.refreshList,
             fileSizeLimit:3,
-            uploadImgLimitNumber:1 //可上传图片张数
+            uploadImgLimitNumber:10 //可上传图片张数
         }
     return (
       <div className="App">

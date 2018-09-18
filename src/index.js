@@ -38,7 +38,9 @@ export default class PicturesWall extends React.Component {
         this.state = {
             previewVisible: false,
             previewImage: '',
-            stateFileList:this.props.fileList || []
+            stateFileList:this.props.fileList || [],
+            uploadImgList:[],
+            uploadImgTimes:0
         };
         this._handlePreview = this._handlePreview.bind(this);
         this._handleCancel = this._handleCancel.bind(this);
@@ -109,10 +111,6 @@ export default class PicturesWall extends React.Component {
         message.info('上传图片中');
         let file = e.file;
         let key = uuid();
-        let obj = {
-            key:key,
-            uploadOrder:uploadImgTimes
-        }
         if(fileSizeLimit&&file.size>fileSizeLimit*1048576){
             message.error('支持'+fileSizeLimit+'M以内图片');
             return
@@ -124,43 +122,54 @@ export default class PicturesWall extends React.Component {
             isQiniu: 'true'
         }).then((res) => {
             if (res.response.code === 0) {
-                let token = res.response.data.upToken;
-                let putExtra = {
-                    fname: "",
-                    params: {},
-                    mimeType: ["image/png", "image/jpeg", "image/jpg"]
-                };
-                let observer = {
-                    next(res) {
-                        let total = res.total;
-                    },
-                    error(err) {
-                        if (err && err.isRequestError) {
-                            switch (err.code) {
-                                case 614:
-                                    message.error('该图片已经存在!');
-                                    break;
-                                default:
-                                    message.error(err.message);
-                            }
-                        } else {
-                            message.error('支持jpg、.png、.jpeg格式!');
-                        }
-                    },
-                    complete:(res)=> {
-                        res.id = id;
-                        res.fileName = file.name;
-                        uploadImgList.forEach((ele)=>{
-                            if(ele.key == res.key){
-                                res.uploadOrder = ele.uploadOrder;
-                            }
-                        })
-                        this._qiniuCallBack(res)
-                    }
+                let obj = {
+                    key:key,
+                    uploadOrder:this.state.uploadImgTimes
                 }
-                //调用sdk上传接口获得相应的observable，控制上传和暂停
-                let observable = Qiniu.upload(file, key, token, putExtra);
-                let subscription = observable.subscribe(observer);
+                console.log(obj,'====')
+                let imgList = this.state.uploadImgList || [];
+                let times = this.state.uploadImgTimes;
+                times++;
+                imgList.push(obj);
+                this.setState({uploadImgList:imgList,uploadImgTimes:times},()=>{
+                    let token = res.response.data.upToken;
+                    let putExtra = {
+                        fname: "",
+                        params: {},
+                        mimeType: ["image/png", "image/jpeg", "image/jpg"]
+                    };
+                    let observer = {
+                        next(res) {
+                            let total = res.total;
+                        },
+                        error(err) {
+                            if (err && err.isRequestError) {
+                                switch (err.code) {
+                                    case 614:
+                                        message.error('该图片已经存在!');
+                                        break;
+                                    default:
+                                        message.error(err.message);
+                                }
+                            } else {
+                                message.error('支持jpg、.png、.jpeg格式!');
+                            }
+                        },
+                        complete:(res)=> {
+                            res.id = id;
+                            res.fileName = file.name;
+                            this.state.uploadImgList.forEach((ele)=>{
+                                if(ele.key == res.key){
+                                    res.uploadOrder = ele.uploadOrder;
+                                }
+                            })
+                            this._qiniuCallBack(res)
+                        }
+                    }
+                    //调用sdk上传接口获得相应的observable，控制上传和暂停
+                    let observable = Qiniu.upload(file, key, token, putExtra);
+                    let subscription = observable.subscribe(observer);
+                });
             }
         })
     }
@@ -173,16 +182,40 @@ export default class PicturesWall extends React.Component {
         }
         let timeStamp=new Date().getTime();
         let list = this.props.fileList || [];
-        list.push({
-            flag:timeStamp,
-            uid: timeStamp,
-            name: res.key,
-            width:res.w,
-            height:res.h,
-            uploadOrder:res.uploadOrder,//用来记录上传图片的顺序
-            status: 'done',
-            url: 'http://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
-        });
+        if(this.props.uploadImgLimitNumber>1 || !this.props.uploadImgLimitNumber&&this.props.uploadImgLimitNumber!=0){
+            list.push({
+                flag:timeStamp,
+                uid: timeStamp,
+                name: res.key,
+                width:res.w,
+                height:res.h,
+                uploadOrder:res.uploadOrder,//用来记录上传图片的顺序
+                status: 'done',
+                url: 'http://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
+            });
+        } else {
+            list = [{
+                uid: -1,
+                name: res.key,
+                uploadOrder:res.uploadOrder,
+                status: 'done',
+                url: 'http://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
+            }]
+        }
+
+        //排序
+        let rawList = [];
+        let concatList = [];
+        list.forEach((ele,index)=>{
+            if(ele.uploadOrder || ele.uploadOrder==0){
+                concatList.push(ele);
+            } else {
+                rawList.push(ele);
+            }
+        })
+        concatList.sort(function(a,b){return a.uploadOrder-b.uploadOrder});
+        list = rawList.concat(concatList);
+
         this.props.refreshList(list,this.props.id);
     }
 
