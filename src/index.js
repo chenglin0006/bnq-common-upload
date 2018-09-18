@@ -2,9 +2,28 @@
 *
 * */
 import React, {Component} from 'react';
-import {Upload, Icon, Modal, Button} from 'antd';
+import {Upload, Icon, Modal, Button,message} from 'antd';
 import './index.less';
 import PropTypes from "prop-types";
+import Fetch from './fetch'
+import * as Qiniu from 'qiniu-js';
+
+var uploadImgList = [];//上传图片的key和order顺序排序
+var uploadImgTimes = 0;//记录顺序
+
+const uuid=()=> {
+    var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+
+    var uuid = s.join("");
+    return uuid;
+}
 
 //数组交换顺序 用于元素的前移或者后移
 const swapItems = (arr,index1,index2)=>{
@@ -23,9 +42,10 @@ export default class PicturesWall extends React.Component {
         };
         this._handlePreview = this._handlePreview.bind(this);
         this._handleCancel = this._handleCancel.bind(this);
-        // this._handleRemove = this._handleRemove.bind(this);
         this._removeImgFun = this._removeImgFun.bind(this);
         this._sortImgFun = this._sortImgFun.bind(this);
+        this._getQiniuToken = this._getQiniuToken.bind(this);
+        this._qiniuCallBack = this._qiniuCallBack.bind(this);
     }
 
     _handleCancel() {
@@ -46,9 +66,7 @@ export default class PicturesWall extends React.Component {
                 list.splice(index,1);
             }
         })
-        this.setState({stateFileList:list},()=>{
-            this.props.refreshList(list);
-        });
+        this.props.refreshList(list,this.props.id);
     }
 
     _sortImgFun(index,type){
@@ -64,20 +82,19 @@ export default class PicturesWall extends React.Component {
             }
             list = swapItems(list, index, index + 1);
         }
-        this.setState({stateFileList:list},()=>{
-            this.props.refreshList(list);
-        });
+        this.props.refreshList(list,this.props.id);
     }
 
     renderPicList(data){
+        const {showPicListDealDiv=true}=this.props;
         return(
             data.map((ele,i)=>{
                 return (
                     <div className='img-item' key={i}>
                         <img src={ele.url} style={{cursor:'pointer'}} onClick={()=>{this._handlePreview(ele)}}/>
                         <div className='buttons-div'>
-                            {this.props.showPicListDealDiv?<Button size='small' onClick={()=>{this._sortImgFun(i,'pre')}}>前移</Button>:""}
-                            {this.props.showPicListDealDiv?<Button size='small' onClick={()=>{this._sortImgFun(i,'next')}}>后移</Button>:""}
+                            {showPicListDealDiv?<Button size='small' onClick={()=>{this._sortImgFun(i,'pre')}}>前移</Button>:""}
+                            {showPicListDealDiv?<Button size='small' onClick={()=>{this._sortImgFun(i,'next')}}>后移</Button>:""}
                             <Button size='small' onClick={()=>{
                                 this._removeImgFun(ele.flag,this.props.id)
                             }}>删除</Button>
@@ -86,6 +103,87 @@ export default class PicturesWall extends React.Component {
                 )
             })
         )
+    }
+
+    _getQiniuToken(e,id,fileSizeLimit){
+        message.info('上传图片中');
+        let file = e.file;
+        let key = uuid();
+        let obj = {
+            key:key,
+            uploadOrder:uploadImgTimes
+        }
+        if(fileSizeLimit&&file.size>fileSizeLimit*1048576){
+            message.error('支持'+fileSizeLimit+'M以内图片');
+            return
+        }
+        let  url = this.props.QiniuTokenUrl || 'http://xres.bnq.com.cn/file/upload/getQiniuTokenWithParams';
+        Fetch({
+            url: url,
+            type: 'GET',
+            isQiniu: 'true'
+        }).then((res) => {
+            if (res.response.code === 0) {
+                let token = res.response.data.upToken;
+                let putExtra = {
+                    fname: "",
+                    params: {},
+                    mimeType: ["image/png", "image/jpeg", "image/jpg"]
+                };
+                let observer = {
+                    next(res) {
+                        let total = res.total;
+                    },
+                    error(err) {
+                        if (err && err.isRequestError) {
+                            switch (err.code) {
+                                case 614:
+                                    message.error('该图片已经存在!');
+                                    break;
+                                default:
+                                    message.error(err.message);
+                            }
+                        } else {
+                            message.error('支持jpg、.png、.jpeg格式!');
+                        }
+                    },
+                    complete:(res)=> {
+                        res.id = id;
+                        res.fileName = file.name;
+                        uploadImgList.forEach((ele)=>{
+                            if(ele.key == res.key){
+                                res.uploadOrder = ele.uploadOrder;
+                            }
+                        })
+                        this._qiniuCallBack(res)
+                    }
+                }
+                //调用sdk上传接口获得相应的observable，控制上传和暂停
+                let observable = Qiniu.upload(file, key, token, putExtra);
+                let subscription = observable.subscribe(observer);
+            }
+        })
+    }
+
+    _qiniuCallBack(res){
+        if(this.props.fileList.length==this.props.uploadImgLimitNumber){
+            let msg = `最多允许传${this.props.uploadImgLimitNumber}张图`;
+            message.error(msg);
+            return
+        }
+        let timeStamp=new Date().getTime();
+        let list = this.props.fileList || [];
+        list.push({
+            flag:timeStamp,
+            uid: timeStamp,
+            name: res.key,
+            width:res.w,
+            height:res.h,
+            uploadOrder:res.uploadOrder,//用来记录上传图片的顺序
+            status: 'done',
+            url: 'http://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
+        });
+        this.props.refreshList(list,this.props.id);
     }
 
     render() {
@@ -115,9 +213,8 @@ export default class PicturesWall extends React.Component {
                     onRemove={(e)=>this._removeImgFun(e.flag,this.props.id)}
                     fileList={fileList}
                     customRequest={(e) => {
-                        this.props.getQiniuToken(
+                        this._getQiniuToken(
                             e,
-                            this.props.QiniuCallBack,
                             this.props.id,
                             this.props.fileSizeLimit?this.props.fileSizeLimit:null
                         )
@@ -144,12 +241,12 @@ PicturesWall.propTypes = {
     id: PropTypes.string,       //用来标识该组件，一个页面上可以有多个上传图片组件
     className: PropTypes.string,   //可以定制样式
     fileList:PropTypes.array,      //用来存放上传的图片列表
-    getQiniuToken:PropTypes.func,   //七牛上传func
-    QiniuCallBack:PropTypes.func,   //上传后图片处理func
+    QiniuTokenUrl:PropTypes.string,   //七牛上传获取token url,有默认链接
     imgDesc:PropTypes.string,       //上传图片的格式说明
     isUploadDefine:PropTypes.bool,  //是否是自定义的照片墙
-    showPicListDealDiv:PropTypes.bool,  //是否需要前移后移功能
-    refreshList:PropTypes.func,   //图片刷新
-    uploadImgLimitNumber:PropTypes.number //可上传图片张数
+    showPicListDealDiv:PropTypes.bool,  //是否需要前移后移功能(默认需要)
+    refreshList:PropTypes.func,   //图片列表刷新
+    uploadImgLimitNumber:PropTypes.number, //可上传图片张数
+    fileSizeLimit:PropTypes.number //图片大小控制，单位M
 }
 

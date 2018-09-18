@@ -38,6 +38,7 @@
     "enzyme-adapter-react-16": "^1.5.0",
     "jest": "^23.6.0",
     "prop-types": "^15.6.0",
+    "qiniu-js": "^2.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.5.1"
   },
