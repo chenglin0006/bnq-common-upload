@@ -8,9 +8,6 @@ import PropTypes from "prop-types";
 import Fetch from './fetch'
 import * as Qiniu from 'qiniu-js';
 
-var uploadImgList = [];//上传图片的key和order顺序排序
-var uploadImgTimes = 0;//记录顺序
-
 const uuid=()=> {
     var s = [];
     var hexDigits = "0123456789abcdef";
@@ -217,6 +214,14 @@ export default class PicturesWall extends React.Component {
         list = rawList.concat(concatList);
 
         this.props.refreshList(list,this.props.id);
+    }
+
+    componentDidMount(){
+        message.config({
+            top: 100,
+            duration: 2,
+            maxCount: 1,
+        });
     }
 
     render() {
