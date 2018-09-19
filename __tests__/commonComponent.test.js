@@ -40,7 +40,11 @@ test('filter', () => {
 
     //测试前移
     filterWrapperTest.find('.buttons-div').at(1).childAt(0).simulate('click');
-    console.log(filterWrapperTest.find('.img-item img').at(0).debug().indexOf('http://res1.bnq.com.cn/d1d85701-e7ff-471f-89d2-4a23960845ec?t=1537264755200'),'====');
-    expect(filterWrapperTest.find('.img-item img').at(0).debug().indexOf('http://res1.bnq.com.cn/d1d85701-e7ff-471f-89d2-4a23960845ec?t=1537264755200')).toBe(10);
+    // console.log(filterWrapperTest.find('.img-item img').at(0).debug(),'====');
+    expect(filterWrapperTest.find('.img-item img').at(0).debug().indexOf('http://res1.bnq.com.cn/d1d85701-e7ff-471f-89d2-4a23960845ec?t=1537264755200')).toBeGreaterThan(-1);
+    expect(filterWrapperTest.find('.img-item img').at(0).debug().indexOf('http://res1.bnq.com.cn/d1d85701-e7ff-471f-89d2-4a23960845ec?t=1537264755200')).not.toBe(-1);
 
+    //测试后移
+    filterWrapperTest.find('.buttons-div').at(1).childAt(0).simulate('click');
+    expect(filterWrapperTest.find('.img-item img').at(0).debug().indexOf('http://res1.bnq.com.cn/003f1937-60b9-440b-b29b-4e152e235a25?t=1537261779453')).toBeGreaterThan(-1)
 });
