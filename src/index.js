@@ -89,7 +89,7 @@ export default class PicturesWall extends React.Component {
     renderPicList(data){
         const {showPicListDealDiv=true}=this.props;
         return(
-            data.map((ele,i)=>{
+            data&&data.map((ele,i)=>{
                 return (
                     <div className='img-item' key={i}>
                         <img src={ele.url} style={{cursor:'pointer'}} onClick={()=>{this._handlePreview(ele)}}/>
@@ -215,6 +215,12 @@ export default class PicturesWall extends React.Component {
         list = rawList.concat(concatList);
         this.setState({stateFileList: list})
         this.props.refreshList(list,this.props.id);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            stateFileList: nextProps.fileList
+        })
     }
 
     componentDidMount(){

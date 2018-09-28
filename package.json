@@ -1,6 +1,6 @@
 {
   "name": "bnq-common-upload",
-  "version": "0.0.18",
+  "version": "0.0.38",
   "description": "react component for bnq",
   "main": "dist/bundle.js",
   "files": [
@@ -30,7 +30,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "antd": "3.5.3",
+    "antd": "3.5.4",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
@@ -39,8 +39,8 @@
     "jest": "^23.6.0",
     "prop-types": "^15.6.0",
     "qiniu-js": "^2.5.1",
-    "react": "^16.2.0",
-    "react-dom": "^16.5.1"
+    "react": "16.2.0",
+    "react-dom": "16.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

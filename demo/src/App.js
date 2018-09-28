@@ -28,6 +28,13 @@ class App extends Component {
               fileList.push(obj)
           }
       })
+      fileList=[{
+          flag: 0,
+          height: 1400,
+          uid: 0,
+          url: "http://res1.bnq.com.cn/7a8fb77c-1c1c-449f-94d0-45d6778c88db?t=1538124888518",
+          width: 1438
+      }]
       const props={
             disabled: true,   //是否可点
             id: 'test',       //用来标识该组件，一个页面上可以有多个上传图片组件
