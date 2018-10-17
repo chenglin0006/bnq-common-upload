@@ -41,19 +41,38 @@ class App extends Component {
             className: 'test',   //可以定制样式
             fileList:fileList,      //用来存放上传的图片列表
             imgDesc:'图片说明',       //上传图片的格式说明
-            isUploadDefine:true,  //是否是自定义的照片墙
+            isUploadDefine:false,  //是否是自定义的照片墙
             showPicListDealDiv:true,
             refreshList:this.refreshList,
             fileSizeLimit:3,
             uploadImgLimitNumber:10 //可上传图片张数
         }
+      const props1={
+          disabled: true,   //是否可点
+          id: 'test1',       //用来标识该组件，一个页面上可以有多个上传图片组件
+          className: 'test',   //可以定制样式
+          fileList:fileList,      //用来存放上传的图片列表
+          imgDesc:'图片说明',       //上传图片的格式说明
+          isUploadDefine:true,  //是否是自定义的照片墙
+          showPicListDealDiv:true,
+          refreshList:this.refreshList,
+          fileSizeLimit:3,
+          uploadImgLimitNumber:10 //可上传图片张数
+      }
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-          <CommonComponent {...props}></CommonComponent>
+          <div style={{padding:'20px'}}>
+              <div>普通样式：</div>
+              <CommonComponent {...props}></CommonComponent>
+          </div>
+          <div  style={{padding:'20px'}}>
+              <div>自定义样式：</div>
+              <CommonComponent {...props1}></CommonComponent>
+          </div>
       </div>
     );
   }
