@@ -45,7 +45,7 @@ class App extends Component {
             showPicListDealDiv:true,
             refreshList:this.refreshList,
             fileSizeLimit:3,
-            uploadImgLimitNumber:10 //可上传图片张数
+            uploadImgLimitNumber:1 //可上传图片张数
         }
       const props1={
           disabled: true,   //是否可点
