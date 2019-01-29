@@ -36,7 +36,7 @@ class App extends Component {
           width: 1438
       }]
       const props={
-            disabled: true,   //是否可点
+            disabled: false,   //是否可点
             id: 'test',       //用来标识该组件，一个页面上可以有多个上传图片组件
             className: 'test',   //可以定制样式
             fileList:fileList,      //用来存放上传的图片列表
@@ -48,7 +48,7 @@ class App extends Component {
             uploadImgLimitNumber:1 //可上传图片张数
         }
       const props1={
-          disabled: true,   //是否可点
+          disabled: false,   //是否可点
           id: 'test1',       //用来标识该组件，一个页面上可以有多个上传图片组件
           className: 'test',   //可以定制样式
           fileList:fileList,      //用来存放上传的图片列表
@@ -57,6 +57,7 @@ class App extends Component {
           showPicListDealDiv:true,
           refreshList:this.refreshList,
           fileSizeLimit:3,
+          oneUploadLimitNumber:5, //一次可上传最多图片数
           uploadImgLimitNumber:10 //可上传图片张数
       }
     return (

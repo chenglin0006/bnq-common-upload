@@ -37,7 +37,8 @@ export default class PicturesWall extends React.Component {
             previewImage: '',
             stateFileList:this.props.fileList || [],
             uploadImgList:[],
-            uploadImgTimes:0
+            uploadImgTimes:0,
+            loadingStatus:false
         };
         this._handlePreview = this._handlePreview.bind(this);
         this._handleCancel = this._handleCancel.bind(this);
@@ -60,13 +61,17 @@ export default class PicturesWall extends React.Component {
 
     _removeImgFun(uid){
         let list  = this.state.stateFileList;
-        list.forEach((item,index)=>{
-            if(item.uid === uid){
-                list.splice(index,1);
-            }
-        })
-        this.setState({stateFileList:list});
-        this.props.refreshList(list,this.props.id);
+        if(this.props.disabled){
+
+        } else {
+            list.forEach((item,index)=>{
+                if(item.uid === uid){
+                    list.splice(index,1);
+                }
+            })
+            this.setState({stateFileList:list});
+            this.props.refreshList(list,this.props.id);
+        }
     }
 
     _sortImgFun(index,type){
@@ -107,7 +112,6 @@ export default class PicturesWall extends React.Component {
     }
 
     _getQiniuToken(e,id,fileSizeLimit){
-        message.info('上传图片中');
         let file = e.file;
         let key = uuid();
         if(fileSizeLimit&&file.size>fileSizeLimit*1048576){
@@ -115,6 +119,8 @@ export default class PicturesWall extends React.Component {
             return
         }
         let  url = this.props.QiniuTokenUrl || 'http://xres.bnq.com.cn/file/upload/getQiniuTokenWithParams';
+        // message.info('上传图片中');
+        this.setState({loadingStatus:true})
         Fetch({
             url: url,
             type: 'GET',
@@ -141,7 +147,7 @@ export default class PicturesWall extends React.Component {
                         next(res) {
                             let total = res.total;
                         },
-                        error(err) {
+                        error:(err) =>{
                             if (err && err.isRequestError) {
                                 switch (err.code) {
                                     case 614:
@@ -152,6 +158,7 @@ export default class PicturesWall extends React.Component {
                                 }
                             } else {
                                 message.error('支持jpg、.png、.jpeg格式!');
+                                this.setState({loadingStatus:false})
                             }
                         },
                         complete:(res)=> {
@@ -174,6 +181,7 @@ export default class PicturesWall extends React.Component {
     }
 
     _qiniuCallBack(res){
+        this.setState({loadingStatus:false})
         if(this.state.stateFileList.length==this.props.uploadImgLimitNumber){
             let msg = `最多允许传${this.props.uploadImgLimitNumber}张图`;
             message.error(msg);
@@ -189,7 +197,7 @@ export default class PicturesWall extends React.Component {
                 height:res.h,
                 uploadOrder:res.uploadOrder,//用来记录上传图片的顺序
                 status: 'done',
-                url: 'http://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
+                url: 'https://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
             });
         } else {
             list = [{
@@ -197,7 +205,7 @@ export default class PicturesWall extends React.Component {
                 name: res.key,
                 uploadOrder:res.uploadOrder,
                 status: 'done',
-                url: 'http://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
+                url: 'https://res1.bnq.com.cn/' + res.key + '?t=' + timeStamp,
             }]
         }
 
@@ -264,6 +272,14 @@ export default class PicturesWall extends React.Component {
                             this.props.fileSizeLimit?this.props.fileSizeLimit:null
                         )
                     }}
+                    beforeUpload={(file,fileList)=>{
+                        if(this.props.oneUploadLimitNumber){
+                            if(fileList&&fileList.length&&fileList.length>5){
+                                message.error('一次最多上传5张图片');
+                                return false
+                            }
+                        }
+                    }}
                 >
                     {this.state.stateFileList&&this.state.stateFileList.length >= uploadImgLimitNumber? null : uploadButton}
                 </Upload>
@@ -276,6 +292,9 @@ export default class PicturesWall extends React.Component {
                 <Modal visible={previewVisible} footer={null} onCancel={this._handleCancel}>
                     <img alt="example" style={{width: '90%'}} src={previewImage}/>
                 </Modal>
+                {this.state.loadingStatus?<div className={'loading-div'}>
+                    图片上传中，请稍后
+                </div>:''}
             </div>
         );
     }
