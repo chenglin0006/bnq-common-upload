@@ -172,7 +172,10 @@ var PicturesWall = function (_React$Component) {
         key: '_removeImgFun',
         value: function _removeImgFun(uid) {
             var list = this.state.stateFileList;
-            if (this.props.disabled) {} else {
+            if (this.props.disabled) {
+                _antd.message.error('请设置disabled为false');
+                return false;
+            } else {
                 list.forEach(function (item, index) {
                     if (item.uid === uid) {
                         list.splice(index, 1);
@@ -185,6 +188,10 @@ var PicturesWall = function (_React$Component) {
     }, {
         key: '_sortImgFun',
         value: function _sortImgFun(index, type) {
+            if (this.props.disabled) {
+                _antd.message.error('请设置disabled为false');
+                return false;
+            }
             var list = this.state.stateFileList;
             if (type == 'pre') {
                 if (index == 0) {
@@ -439,6 +446,10 @@ var PicturesWall = function (_React$Component) {
                             _this4._getQiniuToken(e, _this4.props.id, _this4.props.fileSizeLimit ? _this4.props.fileSizeLimit : null);
                         },
                         beforeUpload: function beforeUpload(file, fileList) {
+                            if (_this4.props.disabled) {
+                                _antd.message.error('请设置disabled为false');
+                                return false;
+                            }
                             if (_this4.props.oneUploadLimitNumber) {
                                 if (fileList && fileList.length && fileList.length > 5) {
                                     _antd.message.error('一次最多上传5张图片');

@@ -62,7 +62,8 @@ export default class PicturesWall extends React.Component {
     _removeImgFun(uid){
         let list  = this.state.stateFileList;
         if(this.props.disabled){
-
+            message.error('请设置disabled为false');
+            return false
         } else {
             list.forEach((item,index)=>{
                 if(item.uid === uid){
@@ -75,6 +76,10 @@ export default class PicturesWall extends React.Component {
     }
 
     _sortImgFun(index,type){
+        if(this.props.disabled){
+            message.error('请设置disabled为false');
+            return false
+        }
         let list  = this.state.stateFileList;
         if (type == 'pre') {
             if (index == 0) {
@@ -273,6 +278,10 @@ export default class PicturesWall extends React.Component {
                         )
                     }}
                     beforeUpload={(file,fileList)=>{
+                        if(this.props.disabled){
+                            message.error('请设置disabled为false');
+                            return false
+                        }
                         if(this.props.oneUploadLimitNumber){
                             if(fileList&&fileList.length&&fileList.length>5){
                                 message.error('一次最多上传5张图片');

@@ -1,6 +1,6 @@
 {
   "name": "bnq-common-upload",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "react component for bnq",
   "main": "dist/bundle.js",
   "files": [
